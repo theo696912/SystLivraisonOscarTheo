@@ -14,7 +14,6 @@ public class Personne {
         compteurId++;
     }
 
-
     public int getId(){
         return id;
     }
@@ -44,6 +43,6 @@ public class Personne {
     }
 
     public String toString(){
-        return "Nom: " + nom + " | Prenom: " + prenom + " | Tel:" + telephone;
+        return "Id: " + id + " | Nom: " + nom + " | Prenom: " + prenom + " | Tel:" + telephone;
     }
 }

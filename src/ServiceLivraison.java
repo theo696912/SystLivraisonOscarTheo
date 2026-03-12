@@ -19,9 +19,18 @@ public class ServiceLivraison {
         return listeClients.size();
     }
 
+    public Client rechercheClientParId(int idRecherche){
+        for (Client client : listeClients){
+            if (client.getId() == idRecherche){
+                return client;
+            }
+        }
+        return null;
+    }
+
     public void afficherClients(){
-        for (int i = 0; i < listeClients.size(); i++){
-            System.out.println(listeClients.get(i).toString());
+        for (Client client : listeClients) {
+            System.out.println(client.toString());
         }
     }
 }
