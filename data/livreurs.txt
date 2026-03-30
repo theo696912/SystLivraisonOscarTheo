@@ -1,0 +1,10 @@
+101;Dupont;Jean;0611223344;Scooter Yamaha NMAX
+102;Lefebvre;Marie;0622334455;Vélo Cargo Électrique
+103;Moreau;Pierre;0633445566;Renault Kangoo
+104;Girard;Sophie;0644556677;Scooter Honda PCX
+105;Petit;Thomas;0655667788;VTT Rockrider
+106;Rousseau;Julie;0666778899;Citroën Berlingo
+107;Lambert;Nicolas;0677889900;Scooter électrique Silence
+108;Fontaine;Benoît;0688990011;Vélo de route
+109;Vincent;Aurélie;0699001122;Peugeot Partner
+110;Muller;Kevin;0711223344;Moto Kawasaki Z650

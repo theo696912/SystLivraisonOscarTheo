@@ -1,6 +1,10 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 public class ServiceLivraison {
     private final ArrayList <Client> listeClients;
@@ -10,7 +14,6 @@ public class ServiceLivraison {
 
     private static int jourDecalage = 0;
 
-
     public ServiceLivraison(){
         this.listeClients = new ArrayList<>();
         this.listeLivreurs = new ArrayList<>();
@@ -19,12 +22,111 @@ public class ServiceLivraison {
     }
 
     //TEMPS
-    public static LocalDate jourActuel(){
+    public static LocalDate getJourActuel(){
         return LocalDate.now().plusDays(jourDecalage);
     }
 
     public static void ajouterUnJour(){
         jourDecalage++;
+    }
+
+    //SIMULATION
+    public void rafraichirSysteme(){   //met à jour le systeme de livraison avec le jour actuel
+        ArrayList <Commande> commandesAExpedier = new ArrayList<>();
+
+        for (Commande commandeActuelle: listeCommandes){
+            if (commandeActuelle.getStatut() == StatutCommande.EN_ATTENTE && ChronoUnit.DAYS.between(commandeActuelle.getDateCommande(), getJourActuel()) >= 1){
+                commandeActuelle.setStatut(StatutCommande.EN_PREPARATION);
+            } else if (commandeActuelle.getStatut() == StatutCommande.EN_PREPARATION && ChronoUnit.DAYS.between(commandeActuelle.getDateCommande(), getJourActuel()) >= 2) {
+                commandesAExpedier.add(commandeActuelle);
+            }
+        }
+
+        commandesAExpedier.sort(Comparator.comparing(Commande::getEstExpress).reversed().thenComparing(Commande::getDateCommande));
+
+        for (Commande commandeActuelle : commandesAExpedier){
+            Livreur livreur = getLivreurDisponible();
+            if (livreur != null){
+                ajouterLivraison(new Livraison(livreur, commandeActuelle));
+            } else {
+                break;
+            }
+        }
+
+        for (Livraison livraisonActuelle: listeLivraisons){
+            if (livraisonActuelle.getDateLivraison().isEqual(getJourActuel()) && livraisonActuelle.getCommande().getStatut() != StatutCommande.LIVREE){
+                livraisonActuelle.terminerLivraison();
+            }
+        }
+    }
+
+    //CHARGEMENT / SAUVEGARDE DE DONNEES
+
+    public boolean chargerClients(){
+        return chargerClients(Paths.get("../../../data/clients.txt"));
+    }
+    public boolean chargerClients(Path cheminClients){       //charger des clients depuis un fichier txt
+        if (!Files.exists(cheminClients)) return false;
+
+        try {
+            List<String> clients = Files.readAllLines(cheminClients);
+            for (String client : clients){
+                if (client.isBlank()) continue;
+                String[] donneesClient = client.split(";");
+                listeClients.add(new Client(Integer.parseInt(donneesClient[0]), donneesClient[1], donneesClient[2], donneesClient[3], donneesClient[4], donneesClient[5]));
+            }
+            initCompteurIdPersonne();
+            return true;
+
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    public boolean chargerLivreurs(){
+        return chargerLivreurs(Paths.get("../../../data/livreurs.txt"));
+    }
+
+    public boolean chargerLivreurs(Path cheminLivreurs){          //charger livreurs depuis un .txt
+        if (!Files.exists(cheminLivreurs)) return false;
+
+        try {
+            List<String> livreurs = Files.readAllLines(cheminLivreurs);
+            for (String livreur : livreurs){
+                if (livreur.isBlank()) continue;
+                String[] donneesLivreur = livreur.split(";");
+                listeLivreurs.add(new Livreur(Integer.parseInt(donneesLivreur[0]), donneesLivreur[1], donneesLivreur[2], donneesLivreur[3], donneesLivreur[4]));
+            }
+            initCompteurIdPersonne();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    public void genererCommandeAleatoire(boolean estExpress){       //permet de generer des commandes sans devoir tout taper à la main
+        Random rand = new Random();
+        String[] objets = {"Livre de poche", "Smartphone", "Panier Bio", "Nespresso", "Fleurs", "Sneakers"};
+        Client client = listeClients.get(rand.nextInt(listeClients.size()));
+        String description = objets[rand.nextInt(objets.length)];
+        listeCommandes.add(new Commande(client, description, estExpress));
+    }
+
+    void initCompteurIdPersonne(){      //utile si des clients/livreurs ont été chargés depuis un fichier txt, fait en sorte que personne n'ait le mm id
+        int dernierId = 0;
+        for (Client clientActuel :listeClients){
+            if (clientActuel.getId() > dernierId){
+                dernierId = clientActuel.getId();
+            }
+        }
+
+        for (Livreur livreurActuel :listeLivreurs){
+            if (livreurActuel.getId() > dernierId){
+                dernierId = livreurActuel.getId();
+            }
+        }
+
+        Personne.setCompteurId(dernierId + 1);
     }
 
     //CLIENTS
@@ -64,10 +166,32 @@ public class ServiceLivraison {
         return resultat;
     }
 
-    public void afficherClients(){
-        for (Client client : listeClients) {
+    public ArrayList<Commande> getCommandesClient(int idClient){  //retourne les commandes d'un client
+        ArrayList <Commande> commandes = new ArrayList<>();
+        for (Commande commande : listeCommandes){
+            if (commande.getClient().getId() == idClient){
+                commandes.add(commande);
+            }
+        }
+        return commandes;
+    }
+
+
+    public void afficherListeClientDonnee(ArrayList <Client> clients){ //permet d'afficher des listes triées, modifiées
+        if (clients == null) return;
+        for (Client client : clients) {
             System.out.println(client);
         }
+    }
+
+    public ArrayList <Client> getTriClientsParNom(boolean alphabetique){
+        ArrayList <Client> triClients = new ArrayList<>(listeClients);
+        if (alphabetique){
+            triClients.sort(Comparator.comparing(Client::getNom));
+        } else {
+            triClients.sort(Comparator.comparing(Client::getNom).reversed());
+        }
+        return triClients;
     }
 
 
@@ -78,11 +202,13 @@ public class ServiceLivraison {
         return listeLivreurs.removeIf(livreur -> livreur.getId() == idASupprimer);
     }
 
-    public int getLivreursListSize(){ return listeLivreurs.size(); }
-
-    public ArrayList<Livreur> getListeLivreurs(){
-        return new ArrayList<>(listeLivreurs);
+    public void afficherLivreurs(){
+        for (Livreur livreur: listeLivreurs){
+            System.out.println(livreur);
+        }
     }
+
+    public int getLivreursListSize(){ return listeLivreurs.size(); }
 
     public Livreur rechercheLivreurParId(int idRecherche){
         for (Livreur livreur : listeLivreurs){
@@ -104,15 +230,10 @@ public class ServiceLivraison {
         return resultat;
     }
 
-
-    public void afficherLivreurs(){
-        for (Livreur livreur: listeLivreurs){
-            System.out.println(livreur);
-        }
-    }
-
-    public Livreur getLivreurDisponible(){
-        for (Livreur livreur: listeLivreurs){
+    public Livreur getLivreurDisponible(){ //trie les livreurs par ordre croissant de nb de livraisons effectuées, et prend le premier disponible (pour repartir le travail)
+        ArrayList<Livreur> listeLivreursTriee = new ArrayList<>(listeLivreurs);
+        listeLivreursTriee.sort(Comparator.comparing(Livreur::getNbLivraisons));
+        for (Livreur livreur: listeLivreursTriee){
             if (livreur.getEstDisponible()){
                 return livreur;
             }
@@ -120,9 +241,17 @@ public class ServiceLivraison {
         return null;
     }
 
+    public ArrayList<Livreur> getLivreursLesPlusActifs(){
+        ArrayList <Livreur> triLivreurs = new ArrayList<>(listeLivreurs);
+        triLivreurs.sort(Comparator.comparing(Livreur::getNbLivraisons).reversed());
+        return triLivreurs;
+    }
+
     //COMMANDES
     public void ajouterCommande(Commande commande){listeCommandes.add(commande);}
+
     public boolean supprimerCommande(int idASupprimer){ return listeCommandes.removeIf(commande -> commande.getId() == idASupprimer);}
+
     public int getCommandesListSize(){
         return listeCommandes.size();
     }
@@ -141,30 +270,20 @@ public class ServiceLivraison {
         return copie;
     }
 
-    public ArrayList<Commande> getCommandesEnAttente(){
-        ArrayList <Commande> commandesEnAttente = new ArrayList<>();
+    public ArrayList<Commande> getCommandesParStatut(StatutCommande statut){  //retourne les commandes qui possèdent le statut specifié
+        ArrayList <Commande> commandesRecherchees = new ArrayList<>();
         for (Commande commande: listeCommandes){
-            if (commande.getStatut() == StatutCommande.EN_ATTENTE){
-                commandesEnAttente.add(commande);
+            if (commande.getStatut() == statut){
+                commandesRecherchees.add(commande);
             }
         }
-        return commandesEnAttente;
+        return commandesRecherchees;
     }
 
-    public ArrayList<Commande> getCommandesEnpreparation(){
-        ArrayList <Commande> commandesEnPreparation = new ArrayList<>();
-        for (Commande commande: listeCommandes){
-            if (commande.getStatut() == StatutCommande.EN_PREPARATION){
-                commandesEnPreparation.add(commande);
-            }
-        }
-        return commandesEnPreparation;
-    }
-
-    public int getNbCommandesLivrees(){
+    public int getNbCommandesPossedantUnStatut(StatutCommande statut){  //retourne le nb de commandes qui possèdent ce statut
         int i = 0;
         for (Commande commande: listeCommandes){
-            if (commande.getStatut() == StatutCommande.LIVREE){
+            if (commande.getStatut() == statut){
                 i++;
             }
         }
@@ -180,13 +299,16 @@ public class ServiceLivraison {
         return null;
     }
 
-    public void afficherCommandes(){
+    public void afficherCommandesEnCours(){
         for (Commande commandeActuelle: listeCommandes){
-            System.out.println(commandeActuelle);
+            if (commandeActuelle.getStatut() != StatutCommande.LIVREE){
+                System.out.println(commandeActuelle);
+            }
         }
     }
 
     public void afficherListeCommandeDonnee(ArrayList <Commande> commandes){
+        if (commandes == null) return;
         for (Commande commandeActuelle: commandes){
             System.out.println(commandeActuelle);
         }
@@ -195,13 +317,20 @@ public class ServiceLivraison {
 
 
     //LIVRAISONS
-
-    public ArrayList<Livraison> getListeLivraisons(){return listeLivraisons;}
+    public int getLivraisonListSize(){ return listeLivraisons.size();}
 
     public void ajouterLivraison(Livraison livraison){
         listeLivraisons.add(livraison);
         livraison.getCommande().setStatut(StatutCommande.EN_LIVRAISON);
         livraison.getLivreur().setEstDisponible(false);
+    }
+
+    public void afficherHistoriqueLivraisons(){
+        for (Livraison livraisonActuelle : listeLivraisons){
+            if (livraisonActuelle.getCommande().getStatut() == StatutCommande.LIVREE){
+                System.out.println(livraisonActuelle);
+            }
+        }
     }
 
     public void afficherLivraisonsEnCours(){

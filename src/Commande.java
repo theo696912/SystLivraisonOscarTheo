@@ -16,24 +16,36 @@ public class Commande {
         id = compteurId;
         this.client = client;
         this.description = description;
-        this.dateCommande = ServiceLivraison.jourActuel();
+        this.dateCommande = ServiceLivraison.getJourActuel();
         statut = StatutCommande.EN_ATTENTE;
         this.estExpress = estExpress;
         compteurId++;
     }
 
+    public LocalDate getDateCommande(){return dateCommande;}
+
+    public StatutCommande getStatut(){
+        return statut;
+    }
+
+    public int getId(){return id;}
+
+    public boolean getEstExpress(){return estExpress;}
+
+    public Client getClient(){return client;}
+
     public void setStatut(StatutCommande nouveauStatut){
         statut = nouveauStatut;
     }
 
-    public LocalDate getDateCommande(){return dateCommande;}
-    public StatutCommande getStatut(){
-        return statut;
-    }
-    public int getId(){return id;}
-    public boolean getEstExpress(){return estExpress;}
+
+    @Override
     public String toString(){
-        return "Id: " + id + " | Client: " + client.getNom() + " " + client.getPrenom() + " | Description: " + description + " | Date: " + dateCommande.format(formatFrance) + " | Statut: " + statut.getLibelle();
+        if (estExpress){
+            return "Id: " + id + " | Client: " + client.getNom() + " " + client.getPrenom() + " | Description: " + description + " | Date: " + dateCommande.format(formatFrance) + " | Livraison express | Statut: " + statut.getLibelle();
+        } else {
+            return "Id: " + id + " | Client: " + client.getNom() + " " + client.getPrenom() + " | Description: " + description + " | Date: " + dateCommande.format(formatFrance) + " | Livraison standard | Statut: " + statut.getLibelle();
+        }
     }
 
 }

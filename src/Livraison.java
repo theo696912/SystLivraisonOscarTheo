@@ -15,19 +15,17 @@ public class Livraison {
         id = compteurId;
         this.livreur = livreur;
         this.commande = commande;
-        dateAssignation = ServiceLivraison.jourActuel();
+        dateAssignation = ServiceLivraison.getJourActuel();
         dateLivraison = null;
         if (commande.getEstExpress()){
-            dateLivraison = ServiceLivraison.jourActuel().plusDays(2);
+            dateLivraison = ServiceLivraison.getJourActuel().plusDays(2);
         } else {
-            dateLivraison = ServiceLivraison.jourActuel().plusDays(6);
+            dateLivraison = ServiceLivraison.getJourActuel().plusDays(4);
         }
         compteurId++;
     }
 
-    public Livreur getLivreur() {
-        return livreur;
-    }
+    public Livreur getLivreur() {return livreur;}
 
     public Commande getCommande(){
         return commande;
@@ -38,10 +36,12 @@ public class Livraison {
     }
 
     public void terminerLivraison(){
-        dateLivraison = ServiceLivraison.jourActuel();
+        livreur.setEstDisponible(true);
+        livreur.incrementerLivraisons();
         commande.setStatut(StatutCommande.LIVREE);
     }
 
+    @Override
     public String toString(){
         return "Livraison n°" + id + " | Commande n°" + commande.getId() + " | Livreur: " + livreur.getNom() + " " + livreur.getPrenom() + " | Date d'assignation: " + dateAssignation.format(formatFrance) + " | Date de livraison prévue: " + dateLivraison.format(formatFrance) + " | Livraison express: " + commande.getEstExpress();
     }

@@ -8,6 +8,12 @@ public class Client extends Personne{
         this.email = email;
     }
 
+    public Client(int id, String nom, String prenom, String telephone, String adresse, String email){
+        super(id,nom,prenom,telephone);
+        this.adresse = adresse;
+        this.email = email;
+    }
+
     public String getAdresse(){
         return adresse;
     }
@@ -24,6 +30,7 @@ public class Client extends Personne{
         this.email = email;
     }
 
+    @Override
     public String toString(){
         return super.toString() + " | Adresse: " + adresse + " | Email: " + email;
     }

@@ -1,0 +1,50 @@
+1;Bosselut;Oscar;0783608002;27 rue de l'ECE;oscar.bosselut@edu.ece.fr
+2;Martin;Lucas;0612345678;10 rue de la Paix, Paris;lucas.martin@gmail.com
+3;Bernard;Léa;0623456789;5 avenue des Champs, Lyon;lea.bernard@outlook.fr
+4;Thomas;Hugo;0634567890;12 rue du Commerce, Bordeaux;hugo.thomas@yahoo.fr
+5;Petit;Emma;0645678901;3 bis boulevard Voltaire, Nantes;emma.petit@free.fr
+6;Robert;Arthur;0656789012;8 impasse des Lilas, Lille;arthur.robert@sfr.fr
+7;Richard;Alice;0667890123;22 rue de la Gare, Strasbourg;alice.richard@orange.fr
+8;Durand;Julien;0678901234;45 avenue Jean Jaurès, Toulouse;julien.durand@laposte.net
+9;Dubois;Chloé;0689012345;7 rue Victor Hugo, Marseille;chloe.dubois@icloud.com
+10;Moreau;Enzo;0690123456;19 rue de Bretagne, Rennes;enzo.moreau@gmail.com
+11;Laurent;Sarah;0712345678;30 rue du Port, Nice;sarah.laurent@outlook.com
+12;Simon;Nathan;0723456789;14 place de la Mairie, Montpellier;nathan.simon@live.fr
+13;Michel;Inès;0734567890;55 avenue de la République, Grenoble;ines.michel@gmail.com
+14;Garcia;Gabriel;0745678901;2 rue de l'Eglise, Angers;gabriel.garcia@wanadoo.fr
+15;Lefebvre;Jade;0756789012;11 allée des Roses, Dijon;jade.lefebvre@me.com
+16;Leroy;Louis;0767890123;9 rue de Verdun, Brest;louis.leroy@gmail.com
+17;Roux;Manon;0778901234;28 boulevard Haussmann, Paris;manon.roux@outlook.fr
+18;David;Paul;0789012345;6 rue de la Liberté, Le Mans;paul.david@sfr.fr
+19;Bertrand;Zoe;0790123456;17 avenue de Lyon, Villeurbanne;zoe.bertrand@free.fr
+20;Morel;Maxime;0611223344;4 rue de l'Ecole, Aix-en-Provence;maxime.morel@gmail.com
+21;Fournier;Camille;0622334455;13 rue des Bouchers, Clermont-Ferrand;camille.fournier@orange.fr
+22;Girard;Théo;0633445566;50 quai des Orfèvres, Paris;theo.girard@gmail.com
+23;Bonnet;Louna;0644556677;21 rue du Temple, Metz;louna.bonnet@outlook.com
+24;Dupont;Mathéo;0655667788;9 bis rue de la Pompe, Amiens;matheo.dupont@yahoo.com
+25;Lambert;Clara;0666778899;34 avenue de la Marne, Tourcoing;clara.lambert@gmail.com
+26;Fontaine;Evan;0677889900;12 rue de la Soie, Lyon;evan.fontaine@laposte.net
+27;Rousseau;Mila;0688990011;5 rue Gambetta, Saint-Etienne;mila.rousseau@gmail.com
+28;Vincent;Noé;0699001122;40 rue de la Poste, Toulon;noe.vincent@free.fr
+29;Muller;Maëlys;0711223344;2 place Bellecour, Lyon;maelys.muller@outlook.fr
+30;Lefevre;Jules;0722334455;8 rue de Rome, Marseille;jules.lefevre@sfr.fr
+31;Faure;Eva;0733445566;15 boulevard Sud, Perpignan;eva.faure@gmail.com
+32;Andre;Kylian;0744556677;67 rue de Paris, Boulogne-Billancourt;kylian.andre@wanadoo.fr
+33;Mercier;Romane;0755667788;3 rue des Pins, Orléans;romane.mercier@orange.fr
+34;Blanc;Timéo;0766778899;10 avenue du Nord, Rouen;timeo.blanc@gmail.com
+35;Guerin;Lise;0777889900;24 rue de la Paix, Caen;lise.guerin@outlook.com
+36;Boyer;Robin;0788990011;7 impasse du Midi, Nancy;robin.boyer@yahoo.fr
+37;Garnier;Ambre;0799001122;31 rue de l'Est, Argenteuil;ambre.garnier@free.fr
+38;Chevalier;Sacha;0601020304;14 rue des Alpes, Annecy;sacha.chevalier@gmail.com
+39;Francois;Célia;0612233445;9 rue de l'Ouest, Pau;celia.francois@sfr.fr
+40;Legrand;Valentin;0623344556;5 boulevard de l'Europe, Colmar;valentin.legrand@outlook.fr
+41;Gauthier;Lina;0634455667;22 rue du Centre, Niort;lina.gauthier@gmail.com
+42;Perrin;Axel;0645566778;11 rue de la Forêt, Fontainebleau;axel.perrin@orange.fr
+43;Robin;Yanis;0656677889;8 avenue Verte, Versailles;yanis.robin@wanadoo.fr
+44;Clement;Margaux;0667788990;3 rue de l'Océan, La Rochelle;margaux.clement@free.fr
+45;Morin;Tess;0678899001;19 place du Marché, Chartres;tess.morin@gmail.com
+46;Nicolas;Antoine;0689900112;6 rue des Jardins, Albi;antoine.nicolas@yahoo.com
+47;Henry;Clémence;0690011223;25 avenue du Lac, Thonon;clemence.henry@outlook.fr
+48;Roussel;Baptiste;0701122334;4 rue du Stade, Lens;baptiste.roussel@sfr.fr
+49;Mathieu;Lou;0712233445;12 boulevard Royal, Luxembourg;lou.mathieu@gmail.com
+50;Masson;Elias;0723344556;10 rue de la Liberté, Dijon;elias.masson@orange.fr

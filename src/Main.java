@@ -1,5 +1,5 @@
+import java.nio.file.Path;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -20,11 +20,11 @@ public class Main {
         return 10000;
     }
 
-    public String lireString(String message){
+    public String lireString(String message, boolean effacerEcran){
         boolean champVide = false;
         String champ;
         do {
-            effacerEcran();
+            if (effacerEcran) effacerEcran();
             if (champVide){System.out.println("Champ vide !");}
             System.out.print(message);
             champ = scan.nextLine();
@@ -32,6 +32,8 @@ public class Main {
         } while(champVide);
         return champ;
     }
+
+
 
     public void effacerEcran(){
         try {
@@ -46,25 +48,25 @@ public class Main {
 
     //CLIENTS ET LIVREURS
     public void saisieEtAjoutClient(){
-        String nom = lireString("Saisissez le nom du client: ");
-        String prenom = lireString("Saisissez le prénom du client: ");
-        String tel = lireString("Saisissez le numéro de téléphone du client: ");
-        String adresse = lireString("Saisissez l'adresse du client: ");
-        String email = lireString("Saisissez l'email du client: ");
+        String nom = lireString("Saisissez le nom du client: ", true);
+        String prenom = lireString("Saisissez le prénom du client: ", true);
+        String tel = lireString("Saisissez le numéro de téléphone du client: ", true);
+        String adresse = lireString("Saisissez l'adresse du client: ", true);
+        String email = lireString("Saisissez l'email du client: ", true);
 
         serviceLivraison.ajouterClient(new Client(nom, prenom, tel, adresse, email));
     }
 
-    public void modifierInfosCommunes(Personne p, int choix){
+    public void modifierInfosCommunes(Personne personne, int choix){
         switch (choix){
             case 1:
-                p.setNom(lireString("Nouveau nom (actuel: " + p.getNom() +"): "));
+                personne.setNom(lireString("Nouveau nom (actuel: " + personne.getNom() +"): ", true));
                 break;
             case 2:
-                p.setPrenom(lireString("Nouveau prénom (actuel: " + p.getPrenom() +"): "));
+                personne.setPrenom(lireString("Nouveau prénom (actuel: " + personne.getPrenom() +"): ", true));
                 break;
             case 3:
-                p.setTelephone(lireString("Nouveau numéro de téléphone (actuel: " + p.getTel() +"): "));
+                personne.setTelephone(lireString("Nouveau numéro de téléphone (actuel: " + personne.getTel() +"): ", true));
                 break;
         }
         System.out.println("Modification effectuée !");
@@ -94,10 +96,10 @@ public class Main {
                     modifierInfosCommunes(clientAmodifier, choixMenu);
                     break;
                 case 4:
-                    clientAmodifier.setAdresse(lireString("Saisissez la nouvelle adresse (actuelle: " + clientAmodifier.getAdresse() + "): "));
+                    clientAmodifier.setAdresse(lireString("Saisissez la nouvelle adresse (actuelle: " + clientAmodifier.getAdresse() + "): ", true));
                     break;
                 case 5:
-                    clientAmodifier.setEmail(lireString("Saisissez la nouvelle adresse email (actuelle: " + clientAmodifier.getEmail() + "): "));
+                    clientAmodifier.setEmail(lireString("Saisissez la nouvelle adresse email (actuelle: " + clientAmodifier.getEmail() + "): ", true));
                     break;
                 case 0:
                     retourMenu = true;
@@ -131,7 +133,7 @@ public class Main {
                     modifierInfosCommunes(livreurAmodifier, choixMenu);
                     break;
                 case 4:
-                    livreurAmodifier.setVehicule(lireString("Saisissez le nom du vehicule (actuel: " + livreurAmodifier.getVehicule() + "): "));
+                    livreurAmodifier.setVehicule(lireString("Saisissez le nom du vehicule (actuel: " + livreurAmodifier.getVehicule() + "): ", true));
                     break;
                 case 0:
                     retourMenu = true;
@@ -177,8 +179,11 @@ public class Main {
             System.out.println(personne);
             System.out.println("\nQue souhaitez vous faire ?\n" +
                     "[1] Supprimer le " + entite + "\n" +
-                    "[2] Modifier les informations du " + entite + "\n" +
-                    "[0] Quitter");
+                    "[2] Modifier les informations du " + entite);
+            if (estUnClient){
+                System.out.println("[3] Afficher les commandes du client");
+            }
+            System.out.println("[0] Quitter");
             switch (lireEntier()) {
                 case 1:
                     if (estUnClient){
@@ -194,6 +199,22 @@ public class Main {
                         modifierInfosLivreurAvecId(personne.getId());
                     }
                     break;
+                case 3:
+                    if (!estUnClient) break;
+                    effacerEcran();
+                    System.out.println("--- Commandes de " + personne.getPrenom() + " " + personne.getNom() + " ---");
+                    ArrayList <Commande> commandes = serviceLivraison.getCommandesClient(personne.getId());
+                    if (commandes.isEmpty()){
+                        System.out.println("Le client n'a passé aucune commande.\n\nAppuyez sur entrée pour quitter...");
+                        scan.nextLine();
+                    } else {
+                        for (Commande commandeActuelle : commandes){
+                            System.out.println(commandeActuelle);
+                        }
+                        System.out.println("\nAppuyez sur entrée pour quitter...");
+                        scan.nextLine();
+                    }
+                    break;
                 case 0:
                     quitter = true;
                     break;
@@ -204,16 +225,22 @@ public class Main {
 
     public void afficherListeClients(){
         if (serviceLivraison.getClientsListSize() != 0){
+            ArrayList <Client> listeClients = serviceLivraison.getListeClients();
             boolean quitter = false;
             while (!quitter){
                 effacerEcran();
                 System.out.println("Liste des clients:");
-                serviceLivraison.afficherClients();
-                System.out.println("\n[1] Modifier ou supprimer un client | [0] Quitter ");
-                switch (lireEntier()){
+                serviceLivraison.afficherListeClientDonnee(listeClients);
+                System.out.println("\n[1] Modifier, afficher ou supprimer un client | [2] Ordre alphabétique | [3] Ordre alphabétique inversé | [0] Quitter ");
+                int choixUtilisateur = lireEntier();
+                switch (choixUtilisateur){
                     case 1:
                         System.out.print("Saisissez l'id du client à éditer: ");
                         menuSupressionModificationEntite(serviceLivraison.rechercheClientParId(lireEntier()));
+                        break;
+                    case 2:
+                    case 3:
+                        listeClients = serviceLivraison.getTriClientsParNom(choixUtilisateur == 2);
                         break;
                     case 0:
                         quitter = true;
@@ -271,7 +298,7 @@ public class Main {
             scan.nextLine();
             return null;
         }
-        String recherche = lireString("Saisissez un mot clé (nom, prenom, email ...): ");
+        String recherche = lireString("Saisissez un mot clé (nom, prenom, email ...): ", true);
         ArrayList<Client> clientsTrouves = serviceLivraison.rechercheClient(recherche);
         if (clientsTrouves.isEmpty()){
             System.out.println("Aucun client n'a été trouvé avec le mot clé \"" + recherche +  "\". Appuyez sur entrée pour revenir...");
@@ -305,7 +332,7 @@ public class Main {
 
     public void rechercheLivreur(){
         effacerEcran();
-        String recherche = lireString("Saisissez un mot clé (nom, prenom, email ...): ");
+        String recherche = lireString("Saisissez un mot clé (nom, prenom, email ...): ", true);
         ArrayList<Livreur> livreursTrouves = serviceLivraison.rechercheLivreur(recherche);
         if (livreursTrouves.isEmpty()){
             System.out.println("Aucun livreur n'a été trouvé avec le mot clé \"" + recherche +  "\". Appuyez sur entrée pour revenir...");
@@ -376,10 +403,10 @@ public class Main {
     }
 
     public void saisieEtAjoutLivreur(){
-        String nom = lireString("Saisissez le nom du livreur: ");
-        String prenom = lireString("Saisissez le prénom du livreur: ");
-        String tel = lireString("Saisissez le numéro de téléphone du livreur: ");
-        String vehicule = lireString("Saisissez le vehicule du livreur: ");
+        String nom = lireString("Saisissez le nom du livreur: ", true);
+        String prenom = lireString("Saisissez le prénom du livreur: ", true);
+        String tel = lireString("Saisissez le numéro de téléphone du livreur: ", true);
+        String vehicule = lireString("Saisissez le vehicule du livreur: ", true);
 
         serviceLivraison.ajouterLivreur(new Livreur(nom, prenom, tel, vehicule));
     }
@@ -438,7 +465,7 @@ public class Main {
                     if (client == null){
                         return;
                     }
-                    description = lireString("Saisissez la description de la commande: ");
+                    description = lireString("Saisissez la description de la commande: ", true);
                     int choixLivraison;
                     do {
                         effacerEcran();
@@ -460,7 +487,7 @@ public class Main {
     }
 
     public void accepterCommande(){
-        ArrayList <Commande> commandesEnAttente = serviceLivraison.getCommandesEnAttente();
+        ArrayList <Commande> commandesEnAttente = serviceLivraison.getCommandesParStatut(StatutCommande.EN_ATTENTE);
         if (commandesEnAttente.isEmpty()){
             effacerEcran();
             System.out.println("--- Commandes en attente ---");
@@ -508,7 +535,7 @@ public class Main {
     }
 
     public void assignerLivreur(){
-        ArrayList <Commande> commandesEnpreparation= serviceLivraison.getCommandesEnpreparation();
+        ArrayList <Commande> commandesEnpreparation= serviceLivraison.getCommandesParStatut(StatutCommande.EN_PREPARATION);
         effacerEcran();
         System.out.println("--- Commandes en préparation ---");
         if (commandesEnpreparation.isEmpty()){
@@ -588,7 +615,7 @@ public class Main {
             effacerEcran();
             System.out.println("--- Commandes ---");
             serviceLivraison.afficherListeCommandeDonnee(commandes);
-            System.out.println("Total de commandes livrées: " + serviceLivraison.getNbCommandesLivrees());
+            System.out.println("Total de commandes livrées: " + serviceLivraison.getNbCommandesPossedantUnStatut(StatutCommande.LIVREE));
             System.out.println("\n[1] Supprimer une commande | [2] Trier les commandes par date croissante | [3] Trier les commandes par date décroissante");
             choixUtilisateur = lireEntier();
             switch (choixUtilisateur){
@@ -625,6 +652,14 @@ public class Main {
         }
     }
 
+    public void afficherHistoriqueLivraisons(){
+        effacerEcran();
+        System.out.println("--- Historique des livraisons ---");
+        serviceLivraison.afficherHistoriqueLivraisons();
+        System.out.println("\n\nAppuyez sur entrée pour quitter...");
+        scan.nextLine();
+    }
+
     public void afficherMenuCommandesLivraisons(){
         System.out.println(
                 "------- COMMANDES & LIVRAISONS -------\n" +
@@ -633,6 +668,7 @@ public class Main {
                 "  [3] Voir les commandes en préparation\n" +                     //Voir les commandes EN_PREPARATION
                 "  [4] Suivi des livraisons en cours\n" +
                 "  [5] Voir toutes les commandes\n" +           //(EN_LIVRAISON)
+                "  [6] Afficher l'historique des livraisons\n" +
                 "  [0] Retour au menu principal"
         );
     }
@@ -660,6 +696,9 @@ public class Main {
                 case 5:
                     afficherCommandes();
                     break;
+                case 6:
+                    afficherHistoriqueLivraisons();
+                    break;
                 case 0:
                     quitter = true;
                     break;
@@ -668,12 +707,12 @@ public class Main {
         }
     }
 
+
     public void afficherMenuClientsLivreurs(){
         System.out.println(
                 "------- CLIENTS & LIVREURS -------\n" +
                         "  [1] Gérer les clients\n" +
                         "  [2] Gérer les livreurs\n" +
-                        "  [3] Afficher l'état de la flotte\n" +
                         "  [0] Retour au menu principal"
         );
     }
@@ -692,8 +731,6 @@ public class Main {
                 case 2:
                     menuGestionLivreurs();
                     break;
-                case 3:
-                    break;
                 case 0:
                     quitter = true;
                     break;
@@ -702,38 +739,28 @@ public class Main {
         }
     }
 
-    public void simulerSysteme(){
-        for (Commande commandeActuelle: serviceLivraison.getListeCommandes()){
-            if (commandeActuelle.getStatut() == StatutCommande.EN_ATTENTE && ChronoUnit.DAYS.between(commandeActuelle.getDateCommande(), ServiceLivraison.jourActuel()) >= 1){
-                commandeActuelle.setStatut(StatutCommande.EN_PREPARATION);
-            } else if (commandeActuelle.getStatut() == StatutCommande.EN_PREPARATION && ChronoUnit.DAYS.between(commandeActuelle.getDateCommande(), ServiceLivraison.jourActuel()) >= 2) {
-                Livreur livreur = serviceLivraison.getLivreurDisponible();
-                if (livreur != null){
-                    serviceLivraison.ajouterLivraison(new Livraison(livreur, commandeActuelle));
-                }
-            }
-        }
-
-        for (Livraison livraisonActuelle: serviceLivraison.getListeLivraisons()){
-            if (livraisonActuelle.getDateLivraison().isEqual(ServiceLivraison.jourActuel())){
-                livraisonActuelle.getLivreur().setEstDisponible(true);
-                livraisonActuelle.getLivreur().incrementerLivraisons();
-
-                livraisonActuelle.getCommande().setStatut(StatutCommande.LIVREE);
-            }
-        }
-    }
 
     public void menuSimulation(){
         boolean quitter = false;
         while (!quitter){
             effacerEcran();
-            simulerSysteme();
-            System.out.println("------- SIMULATION ------- Date actuelle: " + ServiceLivraison.jourActuel().format(formatFrance));
-            System.out.println("\nCommandes:");
-            serviceLivraison.afficherCommandes();
+            serviceLivraison.rafraichirSysteme();
+            System.out.println("------- SIMULATION ------- Date actuelle: " + ServiceLivraison.getJourActuel().format(formatFrance));
+
+            if (serviceLivraison.getCommandesListSize() == 0){
+                System.out.println("\nAucune commande en cours.");
+            } else {
+                System.out.println("\nCommandes en cours:");
+            }
+            serviceLivraison.afficherCommandesEnCours();
             System.out.print("\n\n");
-            System.out.println("Livraisons en cours:");
+
+            if (serviceLivraison.getLivraisonListSize() == 0){
+                System.out.println("Aucune livraison en cours.");
+            } else {
+                System.out.println("Livraisons en cours:");
+            }
+
             serviceLivraison.afficherLivraisonsEnCours();
             System.out.print("\n\n");
             System.out.println("Livreurs:");
@@ -745,10 +772,10 @@ public class Main {
                     ServiceLivraison.ajouterUnJour();
                     break;
                 case 2:
-                    serviceLivraison.ajouterCommande(new Commande(serviceLivraison.getListeClients().getFirst(), "Commande standard", false));
+                    serviceLivraison.genererCommandeAleatoire(false);
                     break;
                 case 3:
-                    serviceLivraison.ajouterCommande(new Commande(serviceLivraison.getListeClients().getFirst(), "Commande express", true));
+                    serviceLivraison.genererCommandeAleatoire(true);
                     break;
                 case 4:
                     serviceLivraison.ajouterLivreur(new Livreur("Odievre", "Théo", "06 78 90 56 04", "Tmax-530"));
@@ -760,7 +787,95 @@ public class Main {
         }
     }
 
+    void menuStatistiques(){
+        effacerEcran();
+        System.out.println("Commandes livrées: " + serviceLivraison.getNbCommandesPossedantUnStatut(StatutCommande.LIVREE));
+        System.out.println("Livreurs les plus actifs:");
+        ArrayList <Livreur> livreurActifs = serviceLivraison.getLivreursLesPlusActifs();
+        for (int i = 0; i < 5; i++){
+            if (livreurActifs.get(i) != null){
+                System.out.println(livreurActifs.get(i));
+            }
+        }
 
+        System.out.println("\nAppuyez sur entrée pour quitter...");
+        scan.nextLine();
+    }
+
+    public void menuChargerDonneesPerso(){
+        boolean quitter = false;
+        while (!quitter){
+            effacerEcran();
+            System.out.println("--- Charger des données ---");
+            System.out.println("Quel type de données voulez vous charger ?\n" +
+                    "[1] Données clients\n" +
+                    "[2] Données livreurs\n" +
+                    "[0] Quitter");
+
+            switch (lireEntier()){
+                case 1:
+                    effacerEcran();
+                    System.out.println("--- Charger des données ---");
+                    System.out.println("Dossier de travail actuel : " + System.getProperty("user.dir"));
+                    Path cheminFichierClients = Path.of(lireString("Saisissez le chemin relatif vers le fichier de données clients: ", false));
+                    if(serviceLivraison.chargerClients(cheminFichierClients)){
+                        System.out.println("Fichier chargé avec succès ! Appuyez sur entrée pour poursuivre...");
+                    } else {
+                        System.out.println("Erreur, verifiez le chemin du fichier. Appuyez sur entrée pour poursuivre...");
+                    }
+                    scan.nextLine();
+                    break;
+                case 2:
+                    effacerEcran();
+                    System.out.println("--- Charger des données ---");
+                    System.out.println("Dossier de travail actuel : " + System.getProperty("user.dir"));
+                    Path cheminFichierLivreurs = Path.of(lireString("Saisissez le chemin relatif vers le fichier de données livreurs: ", false));
+                    if (serviceLivraison.chargerLivreurs(cheminFichierLivreurs)){
+                        System.out.println("Fichier chargé avec succès ! Appuyez sur entrée pour poursuivre...");
+                    } else {
+                        System.out.println("Erreur, verifiez le chemin du fichier. Appuyez sur entrée pour poursuivre...");
+                    }
+                    scan.nextLine();
+                    break;
+                case 0:
+                    quitter = true;
+                    break;
+            }
+        }
+
+    }
+
+    public void menuChargerDonnees(){
+        boolean quitter = false;
+        while (!quitter){
+            effacerEcran();
+            System.out.println("--- Charger des données ---");
+            System.out.println("Que voulez vous faire ?\n" +
+                    "[1] Charger les données par défaut\n" +
+                    "[2] Charger mes propres données\n" +
+                    "[0] Quitter");
+            switch (lireEntier()){
+                case 1:
+                    effacerEcran();
+                    System.out.println("--- Charger des données ---");
+                    if (serviceLivraison.chargerClients() && serviceLivraison.chargerLivreurs()){
+                        System.out.print("Données chargées avec succès ! ");
+                    } else {
+                        System.out.print("Un erreur est survenue lors de la lecture des données. ");
+                    }
+                    System.out.println("Appuyez sur entrée pour quitter... ");
+                    scan.nextLine();
+                    break;
+                case 2:
+                    menuChargerDonneesPerso();
+                    break;
+                case 0:
+                    quitter = true;
+                    break;
+                default:
+            }
+        }
+    }
 
     //MENU PRINCIPAL
     public void afficherMenuPrincipal(){
@@ -774,12 +889,12 @@ public class Main {
                 "        [4] SIMULATION\n" +
                 "  \n" +
                 "        [5] Statistiques Rapides\n" +
+                "        [6] Charger des données\n" +
                 "        [0] Quitter le système\n" +
                 "===========================================");
     }
 
     void main(){
-        serviceLivraison.ajouterClient(new Client("Bosselut", "Oscar", "07 83 60 80 02", "27 rue","oscar.bosselut@edu.ece.fr"));
         boolean quitter = false;
         int choixMenu;
         while (!quitter){
@@ -794,9 +909,15 @@ public class Main {
                     menuClientsLivreurs();
                     break;
                 case 3:
+
                     break;
                 case 4:
                     menuSimulation();
+                    break;
+                case 5:
+                    menuStatistiques();
+                case 6:
+                    menuChargerDonnees();
                     break;
                 case 0:
                     quitter = true;

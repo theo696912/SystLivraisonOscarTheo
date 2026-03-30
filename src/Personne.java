@@ -7,11 +7,21 @@ public class Personne {
     private static int compteurId = 1;
 
     public Personne(String nom, String prenom, String telephone){
-        this.id = compteurId;
+        this.id = compteurId++;
         this.nom = nom;
         this.prenom = prenom;
         this.telephone = telephone;
-        compteurId++;
+    }
+
+    public Personne(int id, String nom, String prenom, String telephone) {
+        this.id = id;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.telephone = telephone;
+    }
+
+    public static void setCompteurId(int nb){
+        compteurId = nb;
     }
 
     public int getId(){
@@ -42,6 +52,7 @@ public class Personne {
         this.telephone = telephone;
     }
 
+    @Override
     public String toString(){
         return "Id: " + id + " | Nom: " + nom + " | Prenom: " + prenom + " | Tel:" + telephone;
     }
