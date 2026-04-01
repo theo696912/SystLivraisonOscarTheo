@@ -4,8 +4,8 @@ import java.util.Scanner;
 
 public class Main {
     //VARIABLES GLOBALES
-    private ServiceLivraison serviceLivraison = new ServiceLivraison();
-    private Scanner scan = new Scanner(System.in);
+    private final ServiceLivraison serviceLivraison = new ServiceLivraison();
+    private final Scanner scan = new Scanner(System.in);
 
     //METHODES GENERALES
     public int lireEntier() {
@@ -292,24 +292,14 @@ public class Main {
     }
 
 
-    public void afficherMenuGestionClients(){
-        System.out.println("Que souhaitez vous faire ?" +
-                "\n" +
-                "\n" +
-                "[1] Ajouter un client\n" +
-                "[2] Afficher la liste des clients\n" +
-                "[3] Rechercher un client\n" +
-                "[0] Retour");
-    }
-
-    public void menuGestionClients(){
+      public void menuGestionClients(){
         boolean quitter = false;
         int choixMenu;
         effacerEcran();
-        afficherMenuGestionClients();
+        System.out.println("Que souhaitez vous faire ?\n\n[1] Ajouter un client\n[2] Afficher la liste des clients\n[3] Rechercher un client\n[0] Retour");
         while (!quitter){
             effacerEcran();
-            afficherMenuGestionClients();
+            System.out.println("Que souhaitez vous faire ?\n\n[1] Ajouter un client\n[2] Afficher la liste des clients\n[3] Rechercher un client\n[0] Retour");
             choixMenu = lireEntier();
 
             switch (choixMenu){
@@ -345,7 +335,7 @@ public class Main {
         boolean quitter = false;
         int choix;
         effacerEcran();
-       afficherMenuGestionLivreurs();
+        afficherMenuGestionLivreurs();
 
         while (!quitter){
             effacerEcran();
@@ -694,6 +684,7 @@ public class Main {
 
     void menuStatistiques(){
         effacerEcran();
+        System.out.println("------- STATISTIQUES -------");
         System.out.println("Commandes livrées: " + serviceLivraison.getNbCommandesPossedantUnStatut(StatutCommande.LIVREE));
         System.out.println("Livreurs les plus actifs:");
         ArrayList <Livreur> livreurActifs = serviceLivraison.getLivreursLesPlusActifs();
@@ -715,7 +706,7 @@ public class Main {
     public void saisieCheminDonneesManuelles(boolean estClient){
         String entite = estClient ? "clients" : "livreurs";
         effacerEcran();
-        System.out.println("--- Charger des données ---");
+        System.out.println("------- Charger des données -------");
         System.out.println("Dossier de travail actuel : " + System.getProperty("user.dir"));
         Path cheminFichierEntite = Path.of(lireString("Saisissez le chemin relatif vers le fichier de données "+ entite +": ", false));
         boolean success;
@@ -738,7 +729,7 @@ public class Main {
         boolean quitter = false;
         while (!quitter){
             effacerEcran();
-            System.out.println("--- Charger des données ---");
+            System.out.println("------- Charger des données -------");
             System.out.println("Quel type de données voulez vous charger ?\n[1] Données clients\n[2] Données livreurs\n[0] Quitter");
             switch (lireEntier()){
                 case 1:
@@ -759,12 +750,12 @@ public class Main {
         boolean quitter = false;
         while (!quitter){
             effacerEcran();
-            System.out.println("--- Charger des données ---");
+            System.out.println("------- Charger des données -------");
             System.out.println("Que voulez vous faire ?\n[1] Charger les données par défaut\n[2] Charger mes propres données\n[0] Quitter");
             switch (lireEntier()){
                 case 1:
                     effacerEcran();
-                    System.out.println("--- Charger des données ---");
+                    System.out.println("------- Charger des données -------");
                     if (serviceLivraison.chargerClients() && serviceLivraison.chargerLivreurs()){
                         System.out.print("Données chargées avec succès ! ");
                     } else {

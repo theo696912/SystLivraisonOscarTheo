@@ -1,12 +1,11 @@
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public class Livraison {
-    private int id;
-    private Livreur livreur;
-    private Commande commande;
-    private LocalDate dateAssignation;
-    private LocalDate dateLivraison;
+    private final int id;
+    private final Livreur livreur;
+    private final Commande commande;
+    private final LocalDate dateAssignation;
+    private final LocalDate dateLivraison;
 
     private static int compteurId = 1;
 
@@ -15,7 +14,6 @@ public class Livraison {
         this.livreur = livreur;
         this.commande = commande;
         dateAssignation = ServiceLivraison.getJourActuel();
-        dateLivraison = null;
         if (commande.getEstExpress()){
             dateLivraison = ServiceLivraison.getJourActuel().plusDays(2);
         } else {
