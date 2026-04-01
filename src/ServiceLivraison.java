@@ -67,6 +67,7 @@ public class ServiceLivraison {
     public boolean chargerClients(){
         return chargerClients(Paths.get("../../../data/clients.txt"));
     }
+
     public boolean chargerClients(Path cheminClients){       //charger des clients depuis un fichier txt
         if (!Files.exists(cheminClients)) return false;
 
@@ -104,20 +105,6 @@ public class ServiceLivraison {
         } catch (IOException e) {
             return false;
         }
-    }
-
-    public void genererCommandeAleatoire(boolean estExpress){       //permet de generer des commandes sans devoir tout taper à la main
-        Random rand = new Random();
-        if (listeClients.isEmpty()){
-            System.out.println("Aucun client n'est enregistré. Appuyez sur entrée pour continuer...");
-            Scanner scan = new Scanner(System.in);
-            scan.nextLine();
-            return;
-        }
-        String[] objets = {"Livre de poche", "Smartphone", "Panier Bio", "Nespresso", "Fleurs", "Sneakers"};
-        Client client = listeClients.get(rand.nextInt(listeClients.size()));
-        String description = objets[rand.nextInt(objets.length)];
-        listeCommandes.add(new Commande(client, description, estExpress));
     }
 
     void initCompteurIdPersonne(){      //utile si des clients/livreurs ont été chargés depuis un fichier txt, fait en sorte que personne n'ait le mm id
@@ -340,6 +327,19 @@ public class ServiceLivraison {
         }
     }
 
+    public void genererCommandeAleatoire(boolean estExpress){       //permet de generer des commandes sans devoir tout taper à la main
+        Random rand = new Random();
+        if (listeClients.isEmpty()){
+            System.out.println("Aucun client n'est enregistré. Appuyez sur entrée pour continuer...");
+            Scanner scan = new Scanner(System.in);
+            scan.nextLine();
+            return;
+        }
+        String[] objets = {"Livre de poche", "Smartphone", "Panier Bio", "Nespresso", "Fleurs", "Sneakers"};
+        Client client = listeClients.get(rand.nextInt(listeClients.size()));
+        String description = objets[rand.nextInt(objets.length)];
+        listeCommandes.add(new Commande(client, description, estExpress));
+    }
 
 
     //LIVRAISONS
