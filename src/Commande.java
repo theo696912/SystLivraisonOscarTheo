@@ -9,7 +9,6 @@ public class Commande {
     private StatutCommande statut;
     private boolean estExpress;
 
-    DateTimeFormatter formatFrance = DateTimeFormatter.ofPattern("dd MMMM yyyy");
     private static int compteurId = 1;
 
     public Commande(Client client, String description, boolean estExpress){
@@ -42,9 +41,9 @@ public class Commande {
     @Override
     public String toString(){
         if (estExpress){
-            return "Id: " + id + " | Client: " + client.getNom() + " " + client.getPrenom() + " | Description: " + description + " | Date: " + dateCommande.format(formatFrance) + " | Livraison express | Statut: " + statut.getLibelle();
+            return "Id: " + id + " | Client: " + client.getNom() + " " + client.getPrenom() + " | Description: " + description + " | Date: " + dateCommande.format(ServiceLivraison.FORMAT_FRANCE) + " | Livraison express | Statut: " + statut.getLibelle();
         } else {
-            return "Id: " + id + " | Client: " + client.getNom() + " " + client.getPrenom() + " | Description: " + description + " | Date: " + dateCommande.format(formatFrance) + " | Livraison standard | Statut: " + statut.getLibelle();
+            return "Id: " + id + " | Client: " + client.getNom() + " " + client.getPrenom() + " | Description: " + description + " | Date: " + dateCommande.format(ServiceLivraison.FORMAT_FRANCE) + " | Livraison standard | Statut: " + statut.getLibelle();
         }
     }
 

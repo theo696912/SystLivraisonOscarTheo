@@ -3,6 +3,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -12,7 +13,8 @@ public class ServiceLivraison {
     private final ArrayList <Commande> listeCommandes;
     private final ArrayList <Livraison> listeLivraisons;
 
-    private static int jourDecalage = 0;
+    private static int jourDecalage = 0; //utile pour la simulation (=date d'aujoudhui + le nb de jours avancés dans la simu)
+    public static final DateTimeFormatter FORMAT_FRANCE = DateTimeFormatter.ofPattern("dd MMMM yyyy");
 
     public ServiceLivraison(){
         this.listeClients = new ArrayList<>();
@@ -106,6 +108,12 @@ public class ServiceLivraison {
 
     public void genererCommandeAleatoire(boolean estExpress){       //permet de generer des commandes sans devoir tout taper à la main
         Random rand = new Random();
+        if (listeClients.isEmpty()){
+            System.out.println("Aucun client n'est enregistré. Appuyez sur entrée pour continuer...");
+            Scanner scan = new Scanner(System.in);
+            scan.nextLine();
+            return;
+        }
         String[] objets = {"Livre de poche", "Smartphone", "Panier Bio", "Nespresso", "Fleurs", "Sneakers"};
         Client client = listeClients.get(rand.nextInt(listeClients.size()));
         String description = objets[rand.nextInt(objets.length)];
@@ -127,6 +135,14 @@ public class ServiceLivraison {
         }
 
         Personne.setCompteurId(dernierId + 1);
+    }
+
+    //PERSONNE
+    public void afficherListePersonneDonee(List<? extends Personne> personnes){
+        if (personnes == null) return;
+        for (Personne personne : personnes) {
+            System.out.println(personne);
+        }
     }
 
     //CLIENTS
@@ -176,14 +192,6 @@ public class ServiceLivraison {
         return commandes;
     }
 
-
-    public void afficherListeClientDonnee(ArrayList <Client> clients){ //permet d'afficher des listes triées, modifiées
-        if (clients == null) return;
-        for (Client client : clients) {
-            System.out.println(client);
-        }
-    }
-
     public ArrayList <Client> getTriClientsParNom(boolean alphabetique){
         ArrayList <Client> triClients = new ArrayList<>(listeClients);
         if (alphabetique){
@@ -203,10 +211,10 @@ public class ServiceLivraison {
     }
 
     public void afficherLivreurs(){
-        for (Livreur livreur: listeLivreurs){
-            System.out.println(livreur);
-        }
+        afficherListePersonneDonee(listeLivreurs);
     }
+
+    public ArrayList <Livreur> getListeLivreurs() {return new ArrayList<>(listeLivreurs);}
 
     public int getLivreursListSize(){ return listeLivreurs.size(); }
 
@@ -230,16 +238,28 @@ public class ServiceLivraison {
         return resultat;
     }
 
-    public Livreur getLivreurDisponible(){ //trie les livreurs par ordre croissant de nb de livraisons effectuées, et prend le premier disponible (pour repartir le travail)
-        ArrayList<Livreur> listeLivreursTriee = new ArrayList<>(listeLivreurs);
-        listeLivreursTriee.sort(Comparator.comparing(Livreur::getNbLivraisons));
-        for (Livreur livreur: listeLivreursTriee){
-            if (livreur.getEstDisponible()){
-                return livreur;
+    public Livreur getLivreurDisponible() {
+        Livreur meilleurLivreur = null;
+        for (Livreur l : listeLivreurs) {
+            if (l.getEstDisponible()) {
+                if (meilleurLivreur == null || l.getNbLivraisons() < meilleurLivreur.getNbLivraisons()) {
+                    meilleurLivreur = l;
+                }
             }
         }
-        return null;
+        return meilleurLivreur;
     }
+
+    public ArrayList <Livreur> getTriLivreursParNom(boolean alphabetique){
+        ArrayList <Livreur> triLivreurs = new ArrayList<>(listeLivreurs);
+        if (alphabetique){
+            triLivreurs.sort(Comparator.comparing(Livreur::getNom));
+        } else {
+            triLivreurs.sort(Comparator.comparing(Livreur::getNom).reversed());
+        }
+        return triLivreurs;
+    }
+
 
     public ArrayList<Livreur> getLivreursLesPlusActifs(){
         ArrayList <Livreur> triLivreurs = new ArrayList<>(listeLivreurs);
@@ -314,6 +334,12 @@ public class ServiceLivraison {
         }
     }
 
+    public void accepterToutesLesCommandesEnAttente(){
+        for (Commande c : getCommandesParStatut(StatutCommande.EN_ATTENTE)) {
+            c.setStatut(StatutCommande.EN_PREPARATION);
+        }
+    }
+
 
 
     //LIVRAISONS
@@ -341,12 +367,3 @@ public class ServiceLivraison {
         }
     }
 }
-
-
-
-
-
-
-
-
-

@@ -9,7 +9,6 @@ public class Livraison {
     private LocalDate dateLivraison;
 
     private static int compteurId = 1;
-    DateTimeFormatter formatFrance = DateTimeFormatter.ofPattern("dd MMMM yyyy");
 
     public Livraison(Livreur livreur, Commande commande){
         id = compteurId;
@@ -43,6 +42,6 @@ public class Livraison {
 
     @Override
     public String toString(){
-        return "Livraison n°" + id + " | Commande n°" + commande.getId() + " | Livreur: " + livreur.getNom() + " " + livreur.getPrenom() + " | Date d'assignation: " + dateAssignation.format(formatFrance) + " | Date de livraison prévue: " + dateLivraison.format(formatFrance) + " | Livraison express: " + commande.getEstExpress();
+        return "Livraison n°" + id + " | Commande n°" + commande.getId() + " | Livreur: " + livreur.getNom() + " " + livreur.getPrenom() + " | Date d'assignation: " + dateAssignation.format(ServiceLivraison.FORMAT_FRANCE) + " | Date de livraison prévue: " + dateLivraison.format(ServiceLivraison.FORMAT_FRANCE) + " | Livraison express: " + commande.getEstExpress();
     }
 }
